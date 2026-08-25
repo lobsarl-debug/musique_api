@@ -57,4 +57,4 @@ def get_instruments():
 # -----------------------------
 @app.post("/instruments")
 def add_instrument(item: Instrument):
-    conn = sqlite3.connect(DB_PATH
+    conn = sqlite3.connect(DB_PATH)
