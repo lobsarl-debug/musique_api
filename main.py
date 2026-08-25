@@ -72,18 +72,26 @@ import requests
 
 PENNYLANE_TOKEN = "TON_TOKEN_PENNYLANE"  # à remplacer par ton vrai token
 
+import requests
+
+PENNYLANE_TOKEN = "TON_TOKEN_PENNYLANE"  # remplace par ton vrai token Pennylane
+
 @app.get("/sync_pennylane")
 def sync_pennylane():
     try:
         url = "https://api.pennylane.com/v1/instruments"
         headers = {"Authorization": f"Bearer {PENNYLANE_TOKEN}"}
         response = requests.get(url, headers=headers)
+
+        # On affiche tout ce que Pennylane renvoie, même si c'est une erreur
         return {
             "status": "http_ok",
             "code": response.status_code,
             "raw": response.text,
         }
+
     except Exception as e:
+        # On affiche l'erreur Python directement
         return {
             "status": "error",
             "message": str(e),
