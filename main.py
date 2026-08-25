@@ -12,7 +12,6 @@ DB_PATH = "data.db"
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-
     # Table instruments
     c.execute("""
         CREATE TABLE IF NOT EXISTS instruments (
@@ -22,7 +21,6 @@ def init_db():
             montant REAL
         )
     """)
-
     conn.commit()
     conn.close()
 
@@ -43,8 +41,7 @@ class Instrument(BaseModel):
 def get_instruments():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("SELECT client, instrument, montant FROM instruments")
-    rows = c.fetchall()
+    rows = c.execute("SELECT client, instrument, montant FROM instruments").fetchall()
     conn.close()
 
     return [
@@ -56,5 +53,13 @@ def get_instruments():
 # ENDPOINT : AJOUTER UN INSTRUMENT
 # -----------------------------
 @app.post("/instruments")
-def add_instrument(item: Instrument):
+def add_instrument(instrument: Instrument):
     conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute(
+        "INSERT INTO instruments (client, instrument, montant) VALUES (?, ?, ?)",
+        (instrument.client, instrument.instrument, instrument.montant),
+    )
+    conn.commit()
+    conn.close()
+    return {"status": "ok"}
