@@ -68,24 +68,23 @@ import requests
 
 PENNYLANE_TOKEN = "W2FnpJhdp-2s2dtC8edmRIL4uZrfbDBglC9aKcgpQ6k"  # à récupérer dans Pennylane > Connectivité > Développeurs
 
+import requests
+
+PENNYLANE_TOKEN = "TON_TOKEN_PENNYLANE"  # à remplacer par ton vrai token
+
 @app.get("/sync_pennylane")
 def sync_pennylane():
-    import requests
-    token = "TON_TOKEN_PENNYLANE"  # récupère-le dans Pennylane > Connectivité > Développeurs
-    url = "https://api.pennylane.com/v1/instruments"
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get(url, headers=headers)
-    data = response.json()
-
-    instruments = data.get("data", [])  # Pennylane renvoie souvent un objet {"data": [...]}
-
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    for item in instruments:
-        c.execute(
-            "INSERT OR REPLACE INTO instruments (client, instrument, montant) VALUES (?, ?, ?)",
-            (item.get("client"), item.get("instrument"), item.get("montant")),
-        )
-    conn.commit()
-    conn.close()
-    return {"status": "sync ok", "count": len(instruments)}
+    try:
+        url = "https://api.pennylane.com/v1/instruments"
+        headers = {"Authorization": f"Bearer {PENNYLANE_TOKEN}"}
+        response = requests.get(url, headers=headers)
+        return {
+            "status": "http_ok",
+            "code": response.status_code,
+            "raw": response.text,
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e),
+        }
